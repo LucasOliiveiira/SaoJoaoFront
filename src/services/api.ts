@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const baseEnvUrl = import.meta.env.VITE_API_URL;
+if (!baseEnvUrl) {
+  throw new Error('VITE_API_URL não está definida!');
+}
+const baseURL = baseEnvUrl.replace(/\/$/, '') + '/api/correio';
+
 const api = axios.create({
-  baseURL: 'https://localhost:7120/api/correio',
+  baseURL,
   timeout: 10000,
 });
 

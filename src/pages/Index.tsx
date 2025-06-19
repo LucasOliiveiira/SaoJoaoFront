@@ -132,7 +132,10 @@ const Index = () => {
   const fetchRanking = async () => {
     setIsRankingLoading(true);
     try {
-      const res = await fetch('https://localhost:7120/api/correio/ranking');
+      const baseEnvUrl = import.meta.env.VITE_API_URL;
+      if (!baseEnvUrl) throw new Error('VITE_API_URL não está definida!');
+      const url = baseEnvUrl.replace(/\/$/, '') + '/api/correio/ranking';
+      const res = await fetch(url);
       const data = await res.json();
       setRanking(data.pessoas || []);
     } catch (e) {
