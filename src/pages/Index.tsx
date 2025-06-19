@@ -216,7 +216,7 @@ const Index = () => {
           setIsRankingOpen(true);
           fetchRanking();
         }}
-        className="fixed top-1/2 right-0 z-50 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 text-white px-8 py-5 rounded-l-3xl shadow-2xl border-4 border-yellow-300 flex items-center gap-4 hover:from-yellow-500 hover:to-red-600 transition-all animate-pulse ring-4 ring-yellow-200 ring-offset-2 scale-110"
+        className="fixed top-1/2 right-0 z-50 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 text-white px-8 py-5 rounded-l-3xl shadow-2xl border-4 border-yellow-300 flex items-center gap-4 hover:from-yellow-500 hover:to-red-600 transition-all animate-pulse ring-4 ring-yellow-200 ring-offset-2 scale-110 hidden md:flex"
         style={{ transform: 'translateY(-50%)', boxShadow: '0 0 32px 8px #fbbf24, 0 0 64px 16px #f87171' }}
       >
         <Trophy className="w-10 h-10 drop-shadow-lg animate-bounce text-yellow-200" />
@@ -224,7 +224,7 @@ const Index = () => {
       </button>
       {/* Drawer do Ranking */}
       <Drawer open={isRankingOpen} onOpenChange={setIsRankingOpen}>
-        <DrawerContent className="bg-gradient-to-br from-yellow-50 via-orange-100 to-red-50 border-4 border-yellow-300 shadow-2xl">
+        <DrawerContent className="bg-gradient-to-br from-yellow-50 via-orange-100 to-red-50 border-4 border-yellow-300 shadow-2xl md:block">
           <DrawerHeader>
             <DrawerTitle className="flex items-center gap-4 text-4xl text-yellow-700 font-extrabold justify-center drop-shadow-lg">
               <Trophy className="w-12 h-12 text-yellow-400 animate-pulse drop-shadow-lg" />
@@ -314,6 +314,10 @@ const Index = () => {
         <FestiveHeader
           onOpenSuggestions={() => setIsSuggestionsModalOpen(true)}
           onOpenInbox={() => setIsInboxModalOpen(true)}
+          onOpenRanking={() => {
+            setIsRankingOpen(true);
+            fetchRanking();
+          }}
         />
 
         <div className="container mx-auto px-4 pb-8">
@@ -399,7 +403,7 @@ const Index = () => {
           )}
 
           {/* Botão para ver todas as mensagens recebidas */}
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-8 mt-8 md:mt-0">
             <button
               onClick={openBaloes}
               className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-4 rounded-full font-extrabold text-2xl shadow-xl border-4 border-blue-300 flex items-center gap-4 hover:from-blue-600 hover:to-blue-800 transition-all animate-bounce"

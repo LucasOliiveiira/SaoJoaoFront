@@ -5,9 +5,10 @@ import { Flame, Mail, Lightbulb, Search } from 'lucide-react';
 interface FestiveHeaderProps {
   onOpenSuggestions: () => void;
   onOpenInbox: () => void;
+  onOpenRanking?: () => void;
 }
 
-const FestiveHeader: React.FC<FestiveHeaderProps> = ({ onOpenSuggestions, onOpenInbox }) => {
+const FestiveHeader: React.FC<FestiveHeaderProps> = ({ onOpenSuggestions, onOpenInbox, onOpenRanking }) => {
   return (
     <div className="relative bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 p-6 rounded-b-3xl shadow-lg mb-8 overflow-hidden">
       {/* Bandeirinhas animadas */}
@@ -101,6 +102,23 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({ onOpenSuggestions, onOpen
             <Search className="w-5 h-5" />
             Ver Mensagens
           </motion.button>
+
+          {/* Botão Ranking só aparece em telas pequenas */}
+          {onOpenRanking && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 1.1 }}
+              onClick={onOpenRanking}
+              className="bg-white text-yellow-600 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 justify-center md:hidden"
+            >
+              {/* Trophy importado do lucide-react */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21h8M12 17v4m-6-8V5a2 2 0 012-2h8a2 2 0 012 2v8a6 6 0 01-12 0z" /></svg>
+              Ranking
+            </motion.button>
+          )}
         </div>
       </div>
 

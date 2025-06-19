@@ -18,7 +18,7 @@ const PersonCard: React.FC<PersonCardProps> = ({ person, onSendMessage }) => {
       className="bg-gradient-to-br from-yellow-100 to-orange-100 border-4 border-red-400 rounded-3xl p-6 shadow-lg hover:shadow-xl transform transition-all duration-300"
     >
       <div className="text-center">
-        <div className="relative mb-4">
+        <div className="relative mb-4 flex justify-center">
           <img
             src={person.urlFoto && person.urlFoto.trim() !== '' ? person.urlFoto : '/71YIvBZnx0L.jpg'}
             alt={person.name}

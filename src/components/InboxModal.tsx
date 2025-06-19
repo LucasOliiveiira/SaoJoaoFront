@@ -43,7 +43,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
       if (data.length === 0) {
         toast({
           title: "📭 Caixa vazia",
-          description: "Nenhuma mensagem encontrada para este ID.",
+          description: "Nenhuma mensagem encontrada para este pinpolho.",
         });
       }
     } catch (error) {
@@ -96,7 +96,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
             </div>
 
             <form onSubmit={handleSearch} className="mb-6">
-              <div className="flex gap-3 bg-white border-2 border-red-300 rounded-2xl p-4 shadow-md">
+              <div className="flex flex-col md:flex-row gap-3 bg-white border-2 border-red-300 rounded-2xl p-4 shadow-md">
                 <select
                   value={personId}
                   onChange={(e) => setPersonId(e.target.value)}
@@ -115,7 +115,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center gap-2 disabled:opacity-50"
+                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 w-full md:w-auto"
                 >
                   {isLoading ? (
                     <motion.div
