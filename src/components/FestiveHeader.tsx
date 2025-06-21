@@ -1,14 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Mail, Lightbulb, Search } from 'lucide-react';
+import { Flame, Mail, Lightbulb, Search, ThumbsUp } from 'lucide-react';
 
 interface FestiveHeaderProps {
   onOpenSuggestions: () => void;
   onOpenInbox: () => void;
-  onOpenRanking?: () => void;
+  onOpenRanking?: () => void; // Tornando opcional para mobile
+  onOpenBaloes: () => void;
+  onOpenVoteFlow: () => void;
 }
 
-const FestiveHeader: React.FC<FestiveHeaderProps> = ({ onOpenSuggestions, onOpenInbox, onOpenRanking }) => {
+const FestiveHeader: React.FC<FestiveHeaderProps> = ({ 
+  onOpenSuggestions, 
+  onOpenInbox, 
+  onOpenRanking,
+  onOpenBaloes,
+  onOpenVoteFlow
+}) => {
   return (
     <div className="relative bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 p-6 rounded-b-3xl shadow-lg mb-8 overflow-hidden">
       {/* Bandeirinhas animadas */}
@@ -76,7 +84,7 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({ onOpenSuggestions, onOpen
           Espalhe alegria e carinho neste São João especial! 💌
         </motion.p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -95,12 +103,38 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({ onOpenSuggestions, onOpen
             whileTap={{ scale: 0.95 }}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            onClick={onOpenBaloes}
+            className="bg-white text-green-600 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 justify-center"
+          >
+            <span className="text-xl">🎈</span>
+            Ver Mensagens
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.9 }}
             onClick={onOpenInbox}
             className="bg-white text-red-600 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 justify-center"
           >
-            <Search className="w-5 h-5" />
-            Ver Mensagens
+            <Mail className="w-5 h-5" />
+            Minhas Mensagens
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1.0 }}
+            onClick={onOpenVoteFlow}
+            className="bg-white text-pink-500 px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 justify-center"
+          >
+            <ThumbsUp className="w-5 h-5" />
+            Votar
           </motion.button>
 
           {/* Botão Ranking só aparece em telas pequenas */}

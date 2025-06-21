@@ -11,8 +11,6 @@ interface SendModalProps {
 }
 
 const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => {
-  const [sender, setSender] = useState('');
-  const [showSenderInput, setShowSenderInput] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -25,19 +23,17 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
     setIsLoading(true);
     try {
       await sendMessage({
-        remetente: showSenderInput ? sender : 'Anônimo',
+        remetente: 'Anônimo', // showSenderInput is removed, so default to 'Anônimo'
         destinatario: recipient.name,
         mensagem: message
       });
       
       toast({
         title: "🎉 Mensagem enviada!",
-        description: `Sua mensagem para ${recipient.name} foi enviada com sucesso!`,
+        description: `Sua mensagem anônima para ${recipient.name} foi enviada com sucesso!`,
       });
       
-      setSender('');
       setMessage('');
-      setShowSenderInput(false);
       onClose();
     } catch (error) {
       toast({
@@ -81,6 +77,14 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
               </button>
             </div>
 
+            {/* Mensagem informativa sobre anonimato */}
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700 text-center">
+                <strong>🔒 Mensagem Anônima:</strong> Sua identidade será mantida em sigilo. 
+                Apenas o destinatário saberá que recebeu uma mensagem.
+              </p>
+            </div>
+
             {recipient && (
               <div className="text-center mb-6 p-4 bg-white rounded-2xl border-2 border-yellow-300">
                 <img
@@ -94,38 +98,6 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  id="showSenderInput"
-                  checked={showSenderInput}
-                  onChange={() => {
-                    setShowSenderInput((prev) => !prev);
-                    if (showSenderInput) setSender('');
-                  }}
-                  className="mr-2 accent-red-500"
-                />
-                <label htmlFor="showSenderInput" className="text-red-700 font-medium cursor-pointer">
-                  Quero me identificar
-                </label>
-              </div>
-              <div>
-                {showSenderInput && (
-                  <>
-                    <label className="block text-red-700 font-bold mb-2">
-                      Seu nome:
-                    </label>
-                    <input
-                      type="text"
-                      value={sender}
-                      onChange={(e) => setSender(e.target.value)}
-                      className="w-full p-3 border-2 border-yellow-300 rounded-xl focus:border-red-400 focus:outline-none bg-white"
-                      placeholder="Digite seu nome..."
-                    />
-                  </>
-                )}
-              </div>
-
               <div>
                 <label className="block text-red-700 font-bold mb-2">
                   Sua mensagem:
@@ -134,7 +106,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="w-full p-3 border-2 border-yellow-300 rounded-xl focus:border-red-400 focus:outline-none bg-white h-32 resize-none"
-                  placeholder="Escreva sua mensagem aqui..."
+                  placeholder="Escreva sua mensagem anônima aqui..."
                   required
                 />
               </div>
@@ -153,7 +125,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  disabled={isLoading || !message.trim() || (showSenderInput && !sender.trim())}
+                  disabled={isLoading || !message.trim()}
                   className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (

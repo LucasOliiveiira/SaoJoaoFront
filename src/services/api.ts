@@ -31,18 +31,49 @@ export interface MessageRequest {
   mensagem: string;
 }
 
+export interface LastMessage {
+  id: number;
+  remetente: string;
+  destinatario: string;
+  conteudo: string;
+  dataEnvio: string;
+  lida: boolean;
+}
+
+export interface TopMessage {
+  id: number;
+  remetente: string;
+  destinatario: string;
+  mensagem: string;
+  dataEnvio: string;
+  likesCount: number;
+}
+
+export interface LikeRequest {
+  mensagemId: number;
+  wlsPessoaId: number;
+}
+
 export interface Suggestion {
   id?: number;
   texto?: string;
   mensagem?: string;
 }
 
+export interface VotoRequest {
+  usuarioId: number;
+  mensagemId: number;
+}
+
 // Buscar todas as mensagens recebidas
 export interface ReceivedMessage {
+  id: number; // Este é o ID da pessoa (destinatário)
   name: string;
   urlFoto: string;
   remetente: string;
   mensagem: string;
+  mensagemId: number; // Este é o verdadeiro ID da mensagem
+  likesCount?: number; // Contagem de likes da mensagem
 }
 
 // Buscar pessoas disponíveis
@@ -146,11 +177,112 @@ export const fetchMyMessages = async (id: number): Promise<Message[]> => {
 // Buscar todas as mensagens recebidas
 export const fetchAllMessages = async (): Promise<ReceivedMessage[]> => {
   try {
-    const response = await api.get('/BuscaTodasAsMensagens');
-    return response.data;
+    const messagesResponse = await api.get('/BuscaTodasAsMensagens');
+    const messages = messagesResponse.data;
+    
+    try {
+      // Tentar buscar mensagens populares para obter likes
+      const popularResponse = await api.get('/mensagens-populares');
+      const popularMessages = popularResponse.data;
+      
+      // Criar um mapa de mensagemId -> likesCount
+      const likesMap = new Map();
+      popularMessages.forEach((popularMsg: TopMessage) => {
+        likesMap.set(popularMsg.id, popularMsg.likesCount);
+      });
+      
+      // Adicionar likesCount a cada mensagem
+      const messagesWithLikes = messages.map((msg: ReceivedMessage) => ({
+        ...msg,
+        likesCount: likesMap.get(msg.mensagemId) || 0
+      }));
+      
+      return messagesWithLikes;
+    } catch (popularError) {
+      // Se falhar ao buscar mensagens populares, retorna mensagens sem likes
+      console.warn('Erro ao buscar mensagens populares, retornando mensagens sem likes:', popularError);
+      return messages.map((msg: ReceivedMessage) => ({
+        ...msg,
+        likesCount: 0
+      }));
+    }
   } catch (error) {
     console.error('Erro ao buscar todas as mensagens:', error);
     throw new Error('Não foi possível carregar as mensagens recebidas');
+  }
+};
+
+// Buscar a última mensagem
+export const fetchLastMessage = async (): Promise<LastMessage | null> => {
+  try {
+    const response = await api.get('/ultima-mensagem');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+    console.error('Erro ao buscar a última mensagem:', error);
+    throw new Error('Não foi possível buscar a última mensagem');
+  }
+};
+
+// Marcar mensagem como lida
+export const markMessageAsRead = async (messageId: number): Promise<void> => {
+  try {
+    await api.post('/mensagem-lida', messageId, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao marcar mensagem como lida:', error);
+    throw new Error('Não foi possível marcar a mensagem como lida');
+  }
+};
+
+// Buscar as 10 mensagens mais curtidas
+export const fetchTop10Messages = async (): Promise<TopMessage[]> => {
+  try {
+    const response = await api.get('/top-10-mensagens');
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar o top 10 de mensagens:', error);
+    throw new Error('Não foi possível carregar o top 10 de mensagens');
+  }
+};
+
+// Curtir uma mensagem
+export const likeMessage = async (request: LikeRequest): Promise<void> => {
+  try {
+    await api.post('/curtir-mensagem', request);
+  } catch (error) {
+    console.error('Erro ao curtir mensagem:', error);
+    throw new Error('Não foi possível registrar o like');
+  }
+};
+
+// Buscar as mensagens mais populares
+export const fetchPopularMessages = async (): Promise<TopMessage[]> => {
+  try {
+    const response = await api.get('/mensagens-populares');
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar mensagens populares:', error);
+    throw new Error('Não foi possível carregar as mensagens populares');
+  }
+};
+
+// Votar em uma mensagem (agora aceita votação anônima)
+export const voteOnMessage = async (request: VotoRequest): Promise<void> => {
+  try {
+    await api.post('/votar', request);
+  } catch (error) {
+    console.error('Erro ao votar na mensagem:', error);
+    // Adiciona uma verificação para o erro de voto duplicado
+    if (axios.isAxiosError(error) && error.response?.status === 400) {
+      throw new Error('Você já votou nesta mensagem.');
+    }
+    throw new Error('Não foi possível registrar o voto');
   }
 };
 

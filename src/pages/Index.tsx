@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { fetchPeople, Person, fetchAllMessages, ReceivedMessage } from '../services/api';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fetchPeople, Person, fetchAllMessages, ReceivedMessage, fetchLastMessage, markMessageAsRead, LastMessage, voteOnMessage, VotoRequest } from '../services/api';
 import PersonCard from '../components/PersonCard';
 import SendModal from '../components/SendModal';
 import SuggestionsModal from '../components/SuggestionsModal';
 import InboxModal from '../components/InboxModal';
 import FestiveHeader from '../components/FestiveHeader';
 import { useToast } from '../hooks/use-toast';
-import { RefreshCw, Trophy } from 'lucide-react';
+import { RefreshCw, Trophy, Crown } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../components/ui/drawer';
 import ReactConfetti from 'react-confetti';
+import NewMessageNotification from '../components/NewMessageNotification';
+import PopularMessagesModal from '../components/PopularMessagesModal';
+import LikeModal from '../components/LikeModal';
+import IdentificationModal from '../components/IdentificationModal';
 
 const ChapeuSaoJoao = () => (
   <svg width="40" height="28" viewBox="0 0 40 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
@@ -22,41 +26,41 @@ const ChapeuSaoJoao = () => (
 const CARDS_PER_PAGE_DESKTOP = 10;
 const CARDS_PER_PAGE_TABLET = 6;
 const CARDS_PER_PAGE_MOBILE = 2;
-const AUTO_SCROLL_INTERVAL = 5000; // 5 segundos
+const AUTO_SCROLL_INTERVAL = 9000; // 8 segundos
 const AUTO_REFRESH_INTERVAL = 10000; // 10 segundos
 
-const BalaoCard = ({ msg }) => {
+const BalaoCard = ({ balão, likesCount = 0 }) => {
   const [imgError, setImgError] = useState(false);
-  const fotoSrc = !msg.urlFoto || msg.urlFoto.trim() === '' || imgError ? '/71YIvBZnx0L.jpg' : msg.urlFoto;
+  const fotoSrc = !balão.urlFoto || balão.urlFoto.trim() === '' || imgError ? '/71YIvBZnx0L.jpg' : balão.urlFoto;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative z-20"
+      className="relative z-20 flex h-full w-full"
     >
-      <div className="relative flex flex-col items-center bg-white/90 border-4 border-yellow-400 rounded-3xl shadow-2xl p-4 pt-8 animate-float">
-        {/* Chapéu */}
-        <div className="absolute left-1/2 -top-8 -translate-x-1/2">
-          <ChapeuSaoJoao />
-        </div>
-        {/* Foto */}
-        <div className="relative mb-2">
+      <div className="relative flex w-full flex-col items-center rounded-3xl border-4 border-yellow-400 bg-white/90 p-3 pt-8 shadow-2xl animate-float">
+        <div className="relative mb-2 shrink-0">
           <img
             src={fotoSrc}
-            alt={msg.name}
-            className="w-16 h-16 rounded-full border-4 border-pink-300 object-cover shadow-lg"
+            alt={balão.name}
+            className="w-12 h-12 rounded-full border-4 border-pink-300 object-cover shadow-lg sm:w-16 sm:h-16"
             onError={() => setImgError(true)}
           />
         </div>
-        <div className="text-lg font-extrabold text-red-700 text-center mb-1 drop-shadow">{msg.name}</div>
-        <div className="text-sm text-pink-600 italic text-center mb-2">
-          Recebeu uma mensagem de <span className="font-bold">{msg.remetente}</span>
+        <div className="mb-1 w-full break-words px-2 text-center text-sm font-extrabold text-red-700 drop-shadow sm:text-lg">
+          {balão.name}
         </div>
-        <div className="bg-gradient-to-r from-yellow-100 to-pink-100 rounded-xl p-3 border border-yellow-200 text-center text-lg text-pink-800 font-bold shadow min-h-[60px] flex items-center justify-center">
-          "{msg.mensagem}"
+        <div className="mb-2 w-full break-words px-2 text-center text-xs italic text-pink-600 sm:text-sm">
+          Recebeu uma mensagem de <span className="font-bold">{balão.remetente}</span>
         </div>
-        <div className="absolute left-1/2 bottom-0 -mb-8 -translate-x-1/2 z-0">
-          <span className="text-7xl select-none animate-bounce">🎈</span>
+        <div className="mt-auto flex w-full flex-grow items-center justify-center rounded-xl border border-yellow-200 bg-gradient-to-r from-yellow-100 to-pink-100 p-2 text-center text-sm font-bold text-pink-800 shadow min-h-[80px] sm:p-3 sm:text-lg">
+          <p className="w-full break-words">"{balão.mensagem}"</p>
+        </div>
+        {/* Contador de likes */}
+        <div className="mt-2 flex items-center gap-1 text-xs sm:text-sm text-pink-600 font-semibold">
+          <span className="text-pink-500">❤️</span>
+          <span>{balão.likesCount || 0} {(balão.likesCount || 0) === 1 ? 'voto' : 'votos'}</span>
         </div>
       </div>
     </motion.div>
@@ -81,10 +85,47 @@ const Index = () => {
   const carouselInterval = useRef<NodeJS.Timeout | null>(null);
   const refreshInterval = useRef<NodeJS.Timeout | null>(null);
   const [cardsPerPage, setCardsPerPage] = useState(CARDS_PER_PAGE_DESKTOP);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [lastMessage, setLastMessage] = useState<LastMessage | null>(null);
+  const [isPopularModalOpen, setIsPopularModalOpen] = useState(false);
+  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
+  const [isIdentificationModalOpen, setIsIdentificationModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<Person | null>(null);
 
   useEffect(() => {
     loadPeople();
   }, []);
+
+  // Busca a última mensagem periodicamente
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const message = await fetchLastMessage();
+        setLastMessage(currentMessage => {
+          if (message && !message.lida && message.id !== currentMessage?.id) {
+            return message;
+          }
+          return currentMessage;
+        });
+      } catch (error) {
+        console.error('Erro ao verificar novas mensagens:', error);
+      }
+    }, 5000); // Verifica a cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleCloseNotification = useCallback(async () => {
+    if (lastMessage) {
+      try {
+        await markMessageAsRead(lastMessage.id);
+      } catch (error) {
+        console.error('Falha ao marcar mensagem como lida', error);
+      } finally {
+        setLastMessage(null);
+      }
+    }
+  }, [lastMessage]);
 
   // Função para definir quantos cards por página de acordo com o tamanho da tela
   useEffect(() => {
@@ -155,6 +196,12 @@ const Index = () => {
     try {
       const data = await fetchAllMessages();
       setBaloes(data);
+      // Limpa as notificações antigas e reseta o set de ids ao abrir
+      // notifiedMessageIds.current.clear(); // This line is removed as notifiedMessageIds is removed
+      // data.forEach(msg => { // This block is removed as notifiedMessageIds is removed
+      //   const uniqueId = `${msg.remetente}-${msg.name}-${msg.mensagem}`;
+      //   notifiedMessageIds.current.add(uniqueId);
+      // });
     } catch (e) {
       toast({
         title: 'Erro ao buscar mensagens',
@@ -173,6 +220,24 @@ const Index = () => {
     async function fetchBaloes() {
       try {
         const data = await fetchAllMessages();
+
+        // Detectar novas mensagens
+        // const newMessages = data.filter(msg => { // This block is removed as notifiedMessageIds is removed
+        //     const uniqueId = `${msg.remetente}-${msg.name}-${msg.mensagem}`;
+        //     return !notifiedMessageIds.current.has(uniqueId);
+        // });
+
+        // if (newMessages.length > 0) { // This block is removed as notifiedMessageIds is removed
+        //   audioRef.current?.play();
+        //   newMessages.forEach(msg => {
+        //     const uniqueId = `${msg.remetente}-${msg.name}-${msg.mensagem}`;
+        //     sonnerToast.custom((t) => <NewMessageToast message={msg} toastId={t} />, {
+        //       duration: 5000,
+        //     });
+        //     notifiedMessageIds.current.add(uniqueId);
+        //   });
+        // }
+
         setBaloes(data);
       } catch (e) {
         // erro já tratado
@@ -208,8 +273,37 @@ const Index = () => {
     if (!showBaloes) setCarouselPage(0);
   }, [showBaloes]);
 
+  const recipientForLastMessage = people.find(p => p.name === lastMessage?.destinatario);
+
+  const openVoteFlow = () => {
+    if (currentUser) {
+      setIsLikeModalOpen(true);
+    } else {
+      setIsIdentificationModalOpen(true);
+    }
+  };
+
+  const handleIdentify = (person: Person) => {
+    setCurrentUser(person);
+    setIsIdentificationModalOpen(false);
+    setIsLikeModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-100 via-yellow-50 to-red-100 relative overflow-hidden">
+      <audio ref={audioRef} src="/45_0HW2p0x.mp3" preload="auto" />
+
+      <AnimatePresence>
+        {lastMessage && (
+          <NewMessageNotification
+            message={lastMessage}
+            recipient={recipientForLastMessage}
+            onClose={handleCloseNotification}
+            audioRef={audioRef}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Botão lateral para ranking */}
       <button
         onClick={() => {
@@ -220,9 +314,20 @@ const Index = () => {
         style={{ transform: 'translateY(-50%)', boxShadow: '0 0 32px 8px #fbbf24, 0 0 64px 16px #f87171' }}
       >
         <Trophy className="w-10 h-10 drop-shadow-lg animate-bounce text-yellow-200" />
-        <span className="text-2xl font-extrabold tracking-wider drop-shadow-lg">Ranking</span>
+        <span className="text-2xl font-extrabold tracking-wider drop-shadow-lg">Mais Populares</span>
       </button>
-      {/* Drawer do Ranking */}
+
+      {/* Botão para Mensagens Populares */}
+      <button
+        onClick={() => setIsPopularModalOpen(true)}
+        className="fixed top-1/2 right-0 z-50 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 text-white px-8 py-5 rounded-l-3xl shadow-2xl border-4 border-blue-300 flex items-center gap-4 hover:from-blue-600 hover:to-purple-700 transition-all animate-pulse ring-4 ring-blue-200 ring-offset-2 scale-110 hidden md:flex"
+        style={{ transform: 'translateY(calc(-50% + 80px))', boxShadow: '0 0 32px 8px #60a5fa, 0 0 64px 16px #a78bfa' }}
+      >
+        <Crown className="w-10 h-10 drop-shadow-lg animate-bounce text-yellow-300" />
+        <span className="text-2xl font-extrabold tracking-wider drop-shadow-lg">Votação</span>
+      </button>
+      
+      {/* Drawer do Ranking de Popularidade */}
       <Drawer open={isRankingOpen} onOpenChange={setIsRankingOpen}>
         <DrawerContent className="bg-gradient-to-br from-yellow-50 via-orange-100 to-red-50 border-4 border-yellow-300 shadow-2xl md:block">
           <DrawerHeader>
@@ -314,10 +419,9 @@ const Index = () => {
         <FestiveHeader
           onOpenSuggestions={() => setIsSuggestionsModalOpen(true)}
           onOpenInbox={() => setIsInboxModalOpen(true)}
-          onOpenRanking={() => {
-            setIsRankingOpen(true);
-            fetchRanking();
-          }}
+          onOpenRanking={() => setIsPopularModalOpen(true)}
+          onOpenBaloes={openBaloes}
+          onOpenVoteFlow={openVoteFlow}
         />
 
         <div className="container mx-auto px-4 pb-8">
@@ -402,15 +506,22 @@ const Index = () => {
             </motion.div>
           )}
 
-          {/* Botão para ver todas as mensagens recebidas */}
-          <div className="flex justify-center mb-8 mt-8 md:mt-0">
+          {/*
+          <div className="flex flex-col sm:flex-row sm:justify-center items-stretch sm:items-center gap-4 mb-8 mt-8 md:mt-0">
             <button
               onClick={openBaloes}
-              className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-4 rounded-full font-extrabold text-2xl shadow-xl border-4 border-blue-300 flex items-center gap-4 hover:from-blue-600 hover:to-blue-800 transition-all animate-bounce"
+              className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-full font-extrabold text-xl shadow-xl border-4 border-blue-300 flex items-center justify-center gap-3 hover:from-blue-600 hover:to-blue-800 transition-all sm:animate-bounce w-full sm:w-auto"
             >
-              🎈 Ver Mensagens Recebidas
+              <span className="text-2xl">🎈</span> Ver Mensagens
+            </button>
+            <button
+              onClick={openVoteFlow}
+              className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-6 py-3 rounded-full font-extrabold text-xl shadow-xl border-4 border-pink-300 flex items-center justify-center gap-3 hover:from-pink-600 hover:to-red-600 transition-all w-full sm:w-auto"
+            >
+              <ThumbsUp className="w-7 h-7" /> Votar
             </button>
           </div>
+          */}
         </div>
 
         {/* Footer festivo */}
@@ -446,6 +557,23 @@ const Index = () => {
       <InboxModal
         isOpen={isInboxModalOpen}
         onClose={() => setIsInboxModalOpen(false)}
+      />
+
+      <PopularMessagesModal 
+        isOpen={isPopularModalOpen}
+        onClose={() => setIsPopularModalOpen(false)}
+      />
+
+      <IdentificationModal
+        isOpen={isIdentificationModalOpen}
+        onClose={() => setIsIdentificationModalOpen(false)}
+        onIdentify={handleIdentify}
+      />
+
+      <LikeModal
+        isOpen={isLikeModalOpen}
+        onClose={() => setIsLikeModalOpen(false)}
+        currentUser={currentUser}
       />
 
       {/* Modal de balões de São João */}
@@ -489,7 +617,7 @@ const Index = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <div className="relative w-full max-w-7xl max-h-[95vh] bg-white/70 rounded-2xl shadow-2xl p-2 overflow-auto flex flex-col items-center justify-center">
+          <div className="relative w-full max-w-7xl max-h-[95vh] bg-white/70 rounded-2xl shadow-2xl p-1 sm:p-2 overflow-auto flex flex-col items-center justify-center">
             {isBaloesLoading ? (
               <div className="flex items-center justify-center h-full text-3xl text-red-600 font-bold animate-pulse">
                 Carregando balões...
@@ -503,9 +631,9 @@ const Index = () => {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 p-4 w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 p-2 sm:p-4 w-full">
                 {baloes.slice(carouselPage * cardsPerPage, (carouselPage + 1) * cardsPerPage).map((msg, idx) => (
-                  <BalaoCard key={idx} msg={msg} />
+                  <BalaoCard key={idx} balão={msg} likesCount={msg.likesCount} />
                 ))}
               </div>
             )}
