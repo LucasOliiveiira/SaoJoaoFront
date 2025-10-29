@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Mail, X } from 'lucide-react';
+import { Heart, Mail, X, Volume2, VolumeX } from 'lucide-react';
 import ReactConfetti from 'react-confetti';
 import { LastMessage, Person } from '../services/api';
+import { useSpeech } from '../hooks/use-speech';
 
 interface NewMessageNotificationProps {
   message: LastMessage;
@@ -18,28 +19,91 @@ const NewMessageNotification: React.FC<NewMessageNotificationProps> = ({
   audioRef,
 }) => {
   const [imgError, setImgError] = useState(false);
+  const hasPlayedRef = useRef(false);
+  
+  const shouldSpeak = typeof message.lerComVoz === 'boolean' ? message.lerComVoz : true;
+  const [isSpeaking, setIsSpeaking] = useState(shouldSpeak);
+  const voiceGender = message.tipoVoz || 'female';
+  
+  console.log('📢 Configurações de voz da mensagem:', {
+    lerComVoz: message.lerComVoz,
+    tipoVoz: message.tipoVoz,
+    shouldSpeak,
+    voiceGender,
+    messageId: message.id,
+    hasPlayed: hasPlayedRef.current
+  });
+  
+  if (typeof message.lerComVoz !== 'boolean') {
+    console.warn('⚠️ O campo "lerComVoz" não está sendo retornado pelo backend. Usando valor padrão (true).');
+    console.warn('Mensagem completa recebida:', message);
+  }
+  
+  const { speak, stop } = useSpeech({
+    rate: 1.3,
+    pitch: voiceGender === 'female' ? 1.05 : 0.95,
+    volume: 1.0,
+    lang: 'pt-BR',
+    preferredVoice: voiceGender
+  });
+
   const fotoSrc = !recipient?.urlFoto || recipient.urlFoto.trim() === '' || imgError
     ? '/71YIvBZnx0L.jpg'
     : recipient.urlFoto;
 
   useEffect(() => {
+    if (hasPlayedRef.current) {
+      console.log('⚠️ Áudio já foi tocado, ignorando nova chamada');
+      return;
+    }
+    
+    hasPlayedRef.current = true;
+    console.log('▶️ Iniciando reprodução de áudio e voz');
+    
     const sound = audioRef.current;
     if (sound) {
+      sound.volume = 0.3;
       sound.loop = true;
-      sound.play();
+      sound.play().catch(err => console.error('Erro ao tocar áudio:', err));
     }
 
-    const timer = setTimeout(onClose, 7000); // Fecha automaticamente após 7 segundos
+    if (shouldSpeak) {
+      const textToSpeak = `Nova mensagem para ${message.destinatario}! ${message.conteudo}`;
+      speak(textToSpeak);
+    }
+
+    const timer = setTimeout(() => {
+      if (shouldSpeak) {
+        stop();
+      }
+      onClose();
+    }, 10000);
 
     return () => {
+      console.log('🛑 Limpando áudio e voz');
       if (sound) {
         sound.pause();
         sound.currentTime = 0;
         sound.loop = false;
+        sound.volume = 1.0;
       }
+      stop();
       clearTimeout(timer);
     };
-  }, [onClose, audioRef]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggleSpeech = () => {
+    if (!shouldSpeak) return;
+    
+    if (isSpeaking) {
+      stop();
+    } else {
+      const textToSpeak = `Nova mensagem para ${message.destinatario}! ${message.conteudo}`;
+      speak(textToSpeak);
+    }
+    setIsSpeaking(!isSpeaking);
+  };
 
   return (
     <motion.div
@@ -68,6 +132,15 @@ const NewMessageNotification: React.FC<NewMessageNotificationProps> = ({
         >
           <X size={28} />
         </button>
+        {shouldSpeak && (
+          <button
+            onClick={toggleSpeech}
+            className="absolute -top-5 -left-5 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-transform hover:scale-110"
+            title={isSpeaking ? "Desligar voz" : "Ligar voz"}
+          >
+            {isSpeaking ? <Volume2 size={28} /> : <VolumeX size={28} />}
+          </button>
+        )}
         <div className="flex flex-col items-center text-center">
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}

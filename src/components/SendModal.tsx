@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Heart } from 'lucide-react';
+import { X, Send, Heart, Volume2 } from 'lucide-react';
 import { Person, sendMessage } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
@@ -13,6 +13,8 @@ interface SendModalProps {
 const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [enableVoice, setEnableVoice] = useState(true);
+  const [voiceType, setVoiceType] = useState<'female' | 'male'>('female');
   const { toast } = useToast();
   const [imgError, setImgError] = useState(false);
 
@@ -22,25 +24,48 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
 
     setIsLoading(true);
     try {
-      await sendMessage({
-        remetente: 'Anônimo', // showSenderInput is removed, so default to 'Anônimo'
+      console.log('📨 Enviando mensagem com configurações:', {
+        remetente: 'Anônimo',
         destinatario: recipient.name,
-        mensagem: message
+        mensagem: message,
+        lerComVoz: enableVoice,
+        tipoVoz: voiceType,
+        enableVoiceType: typeof enableVoice,
+        enableVoiceValue: enableVoice
       });
+      
+      const messagePayload = {
+        remetente: 'Anônimo',
+        destinatario: recipient.name,
+        mensagem: message,
+        lerComVoz: enableVoice,
+        tipoVoz: voiceType
+      };
+      
+      console.log('📨 Payload final antes de enviar:', messagePayload);
+      
+      await sendMessage(messagePayload);
       
       toast({
         title: "🎉 Mensagem enviada!",
-        description: `Sua mensagem anônima para ${recipient.name} foi enviada com sucesso!`,
+        description: `Sua mensagem${enableVoice ? ' com voz ' + (voiceType === 'female' ? 'feminina' : 'masculina') : ' sem voz'} enviada para ${recipient.name}!`,
       });
       
       setMessage('');
+      setEnableVoice(true);
+      setVoiceType('female');
       onClose();
     } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Não foi possível enviar a mensagem. Tente novamente!";
+      
       toast({
         title: "😔 Erro ao enviar",
-        description: "Não foi possível enviar a mensagem. Tente novamente!",
+        description: errorMessage,
         variant: "destructive",
       });
+      console.error('Erro no componente SendModal:', error);
     } finally {
       setIsLoading(false);
     }
@@ -108,6 +133,60 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, recipient }) => 
                   placeholder="Escreva sua mensagem anônima aqui..."
                   required
                 />
+              </div>
+
+              <div className="bg-white p-4 rounded-xl border-2 border-blue-300 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-5 h-5 text-blue-600" />
+                    <label className="text-blue-700 font-bold">Ler mensagem com voz</label>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setEnableVoice(!enableVoice)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      enableVoice ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        enableVoice ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {enableVoice && (
+                  <div>
+                    <label className="block text-blue-700 font-semibold mb-2 text-sm">
+                      Tipo de voz:
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setVoiceType('female')}
+                        className={`p-3 rounded-lg font-semibold transition-all ${
+                          voiceType === 'female'
+                            ? 'bg-blue-600 text-white shadow-lg scale-105'
+                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        }`}
+                      >
+                        👩 Feminina
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setVoiceType('male')}
+                        className={`p-3 rounded-lg font-semibold transition-all ${
+                          voiceType === 'male'
+                            ? 'bg-blue-600 text-white shadow-lg scale-105'
+                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        }`}
+                      >
+                        👨 Masculina
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">

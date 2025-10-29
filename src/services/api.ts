@@ -9,7 +9,49 @@ const baseURL = baseEnvUrl.replace(/\/$/, '') + '/api/correio';
 const api = axios.create({
   baseURL,
   timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
+
+api.interceptors.request.use(
+  (config) => {
+    console.log('Requisição:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: `${config.baseURL}${config.url}`,
+      data: config.data,
+      headers: config.headers
+    });
+    return config;
+  },
+  (error) => {
+    console.error('Erro na requisição:', error);
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => {
+    console.log('Resposta recebida:', {
+      status: response.status,
+      data: response.data,
+      url: response.config.url
+    });
+    return response;
+  },
+  (error) => {
+    console.error('Erro na resposta:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+      code: error.code
+    });
+    return Promise.reject(error);
+  }
+);
 
 export interface Person {
   id: number;
@@ -26,9 +68,16 @@ export interface Message {
 }
 
 export interface MessageRequest {
+  id?: number;
   remetente: string;
   destinatario: string;
   mensagem: string;
+  lida?: boolean;
+  dataEnvio?: string;
+  wlsPessoasId?: number;
+  likesCount?: number;
+  lerComVoz?: boolean;
+  tipoVoz?: 'female' | 'male';
 }
 
 export interface LastMessage {
@@ -38,6 +87,8 @@ export interface LastMessage {
   conteudo: string;
   dataEnvio: string;
   lida: boolean;
+  lerComVoz?: boolean;
+  tipoVoz?: 'female' | 'male';
 }
 
 export interface TopMessage {
@@ -90,8 +141,44 @@ export const fetchPeople = async (): Promise<Person[]> => {
 // Enviar mensagem
 export const sendMessage = async (messageData: MessageRequest): Promise<void> => {
   try {
-    await api.post('/', messageData);
+    const payload = {
+      id: 0,
+      remetente: messageData.remetente,
+      destinatario: messageData.destinatario,
+      mensagem: messageData.mensagem,
+      lida: false,
+      dataEnvio: new Date().toISOString(),
+      wlsPessoasId: 0,
+      likesCount: 0,
+      lerComVoz: messageData.lerComVoz !== undefined ? messageData.lerComVoz : true,
+      tipoVoz: messageData.tipoVoz || 'female'
+    };
+    
+    console.log('📤 Payload sendo enviado:', payload);
+    console.log('📤 Dados originais recebidos:', messageData);
+    const response = await api.post('', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    console.log('Mensagem enviada com sucesso:', response.data);
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Erro ao enviar mensagem:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+      
+      if (error.response?.status === 400) {
+        throw new Error(error.response?.data?.message || 'Dados inválidos. Verifique os campos e tente novamente.');
+      } else if (error.response?.status === 500) {
+        throw new Error('Erro no servidor. Tente novamente mais tarde.');
+      } else if (error.code === 'ERR_NETWORK') {
+        throw new Error('Erro de conexão. Verifique se a API está rodando.');
+      }
+    }
     console.error('Erro ao enviar mensagem:', error);
     throw new Error('Não foi possível enviar a mensagem');
   }
