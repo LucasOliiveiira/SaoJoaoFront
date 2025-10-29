@@ -43,7 +43,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
       if (data.length === 0) {
         toast({
           title: "📭 Caixa vazia",
-          description: "Nenhuma mensagem encontrada para este pinpolho.",
+          description: "Nenhuma mensagem encontrada para esta pessoa.",
         });
       }
     } catch (error) {
@@ -79,28 +79,28 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="bg-gradient-to-br from-red-50 to-pink-50 border-4 border-red-400 rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl"
+            className="bg-gradient-to-br from-blue-50 to-cyan-50 border-4 border-blue-400 rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <Mail className="w-6 h-6 text-red-600" />
-                <h2 className="text-2xl font-bold text-red-700">Caixa de Mensagens</h2>
+                <Mail className="w-6 h-6 text-blue-600" />
+                <h2 className="text-2xl font-bold text-blue-700">Caixa de Mensagens</h2>
               </div>
               <button
                 onClick={onClose}
-                className="text-red-500 hover:text-red-700 transition-colors"
+                className="text-blue-500 hover:text-blue-700 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <form onSubmit={handleSearch} className="mb-6">
-              <div className="flex flex-col md:flex-row gap-3 bg-white border-2 border-red-300 rounded-2xl p-4 shadow-md">
+              <div className="flex flex-col md:flex-row gap-3 bg-white border-2 border-blue-300 rounded-2xl p-4 shadow-md">
                 <select
                   value={personId}
                   onChange={(e) => setPersonId(e.target.value)}
-                  className="flex-1 p-3 border-2 border-red-300 rounded-xl focus:border-red-500 focus:outline-none bg-white"
+                  className="flex-1 p-3 border-2 border-blue-300 rounded-xl focus:border-blue-500 focus:outline-none bg-white"
                   required
                 >
                   <option value="" disabled>Selecione uma pessoa...</option>
@@ -115,7 +115,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 w-full md:w-auto"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 w-full md:w-auto"
                 >
                   {isLoading ? (
                     <motion.div
@@ -136,18 +136,18 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
             <div className="overflow-y-auto max-h-96">
               {!hasSearched ? (
                 <div className="text-center py-8">
-                  <Mail className="w-16 h-16 text-red-300 mx-auto mb-4" />
-                  <p className="text-red-600">Selecione uma pessoa para buscar as mensagens</p>
+                  <Mail className="w-16 h-16 text-blue-300 mx-auto mb-4" />
+                  <p className="text-blue-600">Selecione uma pessoa para buscar as mensagens</p>
                 </div>
               ) : messages.length === 0 && !isLoading ? (
                 <div className="text-center py-8">
                   <div className="text-6xl mb-4">📭</div>
-                  <p className="text-red-600">Nenhuma mensagem encontrada</p>
+                  <p className="text-blue-600">Nenhuma mensagem encontrada</p>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={resetSearch}
-                    className="mt-4 text-red-500 hover:text-red-700 underline"
+                    className="mt-4 text-blue-500 hover:text-blue-700 underline"
                   >
                     Fazer nova busca
                   </motion.button>
@@ -160,22 +160,22 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="bg-white border-2 border-pink-300 rounded-2xl p-6 shadow-2xl hover:shadow-pink-400/60 transition-all duration-300 relative overflow-hidden"
+                      className="bg-white border-2 border-blue-300 rounded-2xl p-6 shadow-2xl hover:shadow-blue-400/60 transition-all duration-300 relative overflow-hidden"
                     >
-                      <div className="absolute -top-4 -left-4 text-pink-200 text-6xl select-none pointer-events-none rotate-[-15deg]">💌</div>
-                      <div className="absolute -bottom-4 -right-4 text-pink-100 text-5xl select-none pointer-events-none rotate-[10deg]">❤️</div>
+                      <div className="absolute -top-4 -left-4 text-blue-200 text-6xl select-none pointer-events-none rotate-[-15deg]">💌</div>
+                      <div className="absolute -bottom-4 -right-4 text-cyan-100 text-5xl select-none pointer-events-none rotate-[10deg]">❤️</div>
                       {message.dataEnvio && (
-                        <div className="flex items-center gap-1 text-xs text-pink-500 mb-2">
+                        <div className="flex items-center gap-1 text-xs text-blue-500 mb-2">
                           <Calendar className="w-4 h-4" />
                           <span>{new Date(message.dataEnvio).toLocaleDateString('pt-BR')}</span>
                         </div>
                       )}
-                      <div className="bg-gradient-to-r from-pink-100 to-red-100 rounded-xl p-4 border border-pink-200 flex flex-col items-center backdrop-brightness-95">
-                        <p className="text-pink-700 leading-relaxed italic text-2xl text-center font-extrabold drop-shadow-md">
+                      <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-4 border border-blue-200 flex flex-col items-center backdrop-brightness-95">
+                        <p className="text-blue-700 leading-relaxed italic text-2xl text-center font-extrabold drop-shadow-md">
                           "{message.mensagem}"
                         </p>
-                        <span className="block mt-4 text-pink-400 text-lg font-bold drop-shadow">Mensagem enviada com carinho 💖</span>
-                        <span className="block mt-1 text-pink-300 text-base font-semibold">Que o amor esteja sempre presente! ✨</span>
+                        <span className="block mt-4 text-blue-400 text-lg font-bold drop-shadow">Mensagem enviada com carinho 💖</span>
+                        <span className="block mt-1 text-cyan-300 text-base font-semibold">Que o amor esteja sempre presente! ✨</span>
                       </div>
                     </motion.div>
                   ))}
@@ -188,7 +188,7 @@ const InboxModal: React.FC<InboxModalProps> = ({ isOpen, onClose }) => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onClose}
-                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-3 rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
               >
                 Fechar
               </motion.button>

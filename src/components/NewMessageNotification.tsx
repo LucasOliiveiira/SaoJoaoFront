@@ -53,18 +53,18 @@ const NewMessageNotification: React.FC<NewMessageNotificationProps> = ({
         height={window.innerHeight}
         recycle={false}
         numberOfPieces={400}
-        colors={['#ff4e4e', '#ff7a7a', '#ffd1d1', '#ffffff']}
+        colors={['#3b82f6', '#06b6d4', '#60a5fa', '#ffffff']}
         confettiSource={{ x: window.innerWidth / 2, y: window.innerHeight, w: window.innerWidth, h: 0 }}
       />
       <motion.div
         initial={{ scale: 0.5, y: 100 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-        className="relative w-full max-w-lg rounded-3xl border-8 border-pink-400 bg-gradient-to-br from-red-500 to-pink-500 p-8 text-white shadow-2xl"
+        className="relative w-full max-w-lg rounded-3xl border-8 border-blue-400 bg-gradient-to-br from-blue-500 to-cyan-500 p-8 text-white shadow-2xl"
       >
         <button
           onClick={onClose}
-          className="absolute -top-5 -right-5 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white text-red-500 shadow-lg transition-transform hover:scale-110"
+          className="absolute -top-5 -right-5 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white text-blue-500 shadow-lg transition-transform hover:scale-110"
         >
           <X size={28} />
         </button>
@@ -90,10 +90,10 @@ const NewMessageNotification: React.FC<NewMessageNotificationProps> = ({
             </p>
           </div>
           <div className="w-full rounded-2xl bg-white/90 p-6 text-gray-800">
-            <p className="text-2xl font-bold italic leading-relaxed text-pink-700">
+            <p className="text-2xl font-bold italic leading-relaxed text-blue-700">
               "{message.conteudo}"
             </p>
-            <p className="mt-4 text-right text-lg font-semibold text-red-600">
+            <p className="mt-4 text-right text-lg font-semibold text-blue-600">
               - {message.remetente}
             </p>
           </div>

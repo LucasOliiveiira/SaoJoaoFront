@@ -18,8 +18,7 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({
   onOpenVoteFlow
 }) => {
   return (
-    <div className="relative bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 p-6 rounded-b-3xl shadow-lg mb-8 overflow-hidden">
-      {/* Bandeirinhas animadas */}
+    <div className="relative bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 p-6 rounded-b-3xl shadow-lg mb-8 overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-2">
         {[...Array(20)].map((_, i) => (
           <motion.div
@@ -28,9 +27,9 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 2, delay: i * 0.1, repeat: Infinity }}
             className={`absolute w-4 h-6 ${
-              i % 4 === 0 ? 'bg-red-500' :
-              i % 4 === 1 ? 'bg-yellow-500' :
-              i % 4 === 2 ? 'bg-green-500' : 'bg-blue-500'
+              i % 4 === 0 ? 'bg-blue-500' :
+              i % 4 === 1 ? 'bg-cyan-500' :
+              i % 4 === 2 ? 'bg-indigo-500' : 'bg-purple-500'
             }`}
             style={{ 
               left: `${(i * 5)}%`,
@@ -51,17 +50,17 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Flame className="w-8 h-8 text-orange-200 fill-orange-300" />
+            <span className="text-4xl">🎓</span>
           </motion.div>
           <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg flex items-center gap-3 justify-center">
             Correio Elegante Digital
-            <img src="/71YIvBZnx0L.jpg" alt="Festa Junina" className="w-12 h-12 rounded-full border-2 border-yellow-400 object-cover shadow-md bg-white" />
+            <img src="/71YIvBZnx0L.jpg" alt="Semana W" className="w-12 h-12 rounded-full border-2 border-cyan-400 object-cover shadow-md bg-white" />
           </h1>
           <motion.div
             animate={{ rotate: [0, -10, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity, delay: 1 }}
           >
-            <Flame className="w-8 h-8 text-orange-200 fill-orange-300" />
+            <span className="text-4xl">🎉</span>
           </motion.div>
         </motion.div>
         
@@ -69,19 +68,19 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-2xl md:text-3xl font-bold text-yellow-100 mb-6"
+          className="text-2xl md:text-3xl font-bold text-cyan-100 mb-6"
         >
-          🎪 Arraia WLS 2025 🎪
+          🎓 Semana W 2025 🎉
         </motion.h2>
 
         <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-lg text-yellow-100 mb-6 max-w-2xl mx-auto"
+          className="text-lg text-cyan-100 mb-6 max-w-2xl mx-auto"
         >
-          Envie mensagens carinhosas para seus amigos nesta festa junina! 
-          Espalhe alegria e carinho neste São João especial! 💌
+          Envie mensagens carinhosas para seus novos amigos nesta semana especial! 
+          Espalhe alegria e boas-vindas na Semana W! 💌
         </motion.p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
@@ -156,34 +155,33 @@ const FestiveHeader: React.FC<FestiveHeaderProps> = ({
         </div>
       </div>
 
-      {/* Elementos decorativos flutuantes */}
       <motion.div
         animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
         transition={{ duration: 3, repeat: Infinity }}
         className="absolute top-4 left-4 text-2xl"
       >
-        🎈
+        🎓
       </motion.div>
       <motion.div
         animate={{ y: [0, -15, 0], rotate: [0, -5, 0] }}
         transition={{ duration: 4, repeat: Infinity, delay: 1 }}
         className="absolute top-8 right-8 text-3xl"
       >
-        🎪
+        🎉
       </motion.div>
       <motion.div
         animate={{ y: [0, -8, 0], rotate: [0, 10, 0] }}
         transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
         className="absolute bottom-4 left-8 text-2xl"
       >
-        🌽
+        🌟
       </motion.div>
       <motion.div
         animate={{ y: [0, -12, 0], rotate: [0, -8, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, delay: 1.5 }}
         className="absolute bottom-6 right-4 text-2xl"
       >
-        🎭
+        🎊
       </motion.div>
     </div>
   );

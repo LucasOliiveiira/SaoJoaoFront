@@ -107,20 +107,19 @@ const SuggestionsModal: React.FC<SuggestionsModalProps> = ({ isOpen, onClose }) 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-gradient-to-br from-yellow-200 via-pink-100 to-red-200 border-4 border-pink-400 rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-2xl shadow-lg transition-all duration-300 relative overflow-hidden"
+                    className="bg-gradient-to-br from-blue-200 via-cyan-100 to-indigo-200 border-4 border-blue-400 rounded-2xl p-4 sm:p-6 md:p-8 hover:shadow-2xl shadow-lg transition-all duration-300 relative overflow-hidden"
                   >
-                    {/* Elementos festivos animados */}
-                    <div className="absolute -top-4 -left-4 text-yellow-200 text-5xl select-none pointer-events-none rotate-[-15deg] animate-bounce">🎉</div>
-                    <div className="absolute -bottom-4 -right-4 text-pink-200 text-4xl select-none pointer-events-none rotate-[10deg] animate-pulse">🎊</div>
+                    <div className="absolute -top-4 -left-4 text-blue-200 text-5xl select-none pointer-events-none rotate-[-15deg] animate-bounce">🎉</div>
+                    <div className="absolute -bottom-4 -right-4 text-cyan-200 text-4xl select-none pointer-events-none rotate-[10deg] animate-pulse">✨</div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
-                      <p className="text-pink-700 w-full leading-relaxed text-lg sm:text-xl md:text-2xl font-extrabold italic text-center drop-shadow-lg px-2 break-words">
+                      <p className="text-blue-700 w-full leading-relaxed text-lg sm:text-xl md:text-2xl font-extrabold italic text-center drop-shadow-lg px-2 break-words">
                         "{suggestion.texto || suggestion.mensagem}"
                       </p>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => copyToClipboard(suggestion.texto || suggestion.mensagem || '', suggestion.id ?? index)}
-                        className="bg-gradient-to-r from-yellow-400 to-pink-400 text-white p-2 sm:p-3 rounded-xl hover:from-pink-400 hover:to-yellow-400 transition-all duration-300 flex items-center gap-1 text-sm sm:text-base font-extrabold shadow-lg flex-shrink-0 w-full sm:w-auto justify-center"
+                        className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white p-2 sm:p-3 rounded-xl hover:from-cyan-400 hover:to-blue-400 transition-all duration-300 flex items-center gap-1 text-sm sm:text-base font-extrabold shadow-lg flex-shrink-0 w-full sm:w-auto justify-center"
                       >
                         {copiedId === (suggestion.id ?? index) ? (
                           <>
@@ -135,13 +134,12 @@ const SuggestionsModal: React.FC<SuggestionsModalProps> = ({ isOpen, onClose }) 
                         )}
                       </motion.button>
                     </div>
-                    {/* Mais elementos engraçados */}
                     <div className="flex justify-center gap-2 mt-3">
-                      <span className="text-2xl animate-bounce">🔥</span>
-                      <span className="text-2xl animate-pulse">🌽</span>
+                      <span className="text-2xl animate-bounce">🎓</span>
+                      <span className="text-2xl animate-pulse">🌟</span>
                       <span className="text-2xl animate-spin-slow">🎈</span>
-                      <span className="text-2xl animate-bounce">💃</span>
-                      <span className="text-2xl animate-pulse">🕺</span>
+                      <span className="text-2xl animate-bounce">💙</span>
+                      <span className="text-2xl animate-pulse">✨</span>
                     </div>
                   </motion.div>
                 ))

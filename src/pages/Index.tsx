@@ -15,14 +15,6 @@ import PopularMessagesModal from '../components/PopularMessagesModal';
 import LikeModal from '../components/LikeModal';
 import IdentificationModal from '../components/IdentificationModal';
 
-const ChapeuSaoJoao = () => (
-  <svg width="40" height="28" viewBox="0 0 40 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-    <path d="M2 26L20 2L38 26Z" fill="#F59E42" stroke="#B45309" strokeWidth="2"/>
-    <rect x="10" y="22" width="20" height="6" rx="3" fill="#FDE68A" stroke="#B45309" strokeWidth="2"/>
-    <circle cx="20" cy="8" r="2" fill="#B45309"/>
-  </svg>
-);
-
 const CARDS_PER_PAGE_DESKTOP = 10;
 const CARDS_PER_PAGE_TABLET = 6;
 const CARDS_PER_PAGE_MOBILE = 2;
@@ -39,27 +31,26 @@ const BalaoCard = ({ balão, likesCount = 0 }) => {
       animate={{ opacity: 1, scale: 1 }}
       className="relative z-20 flex h-full w-full"
     >
-      <div className="relative flex w-full flex-col items-center rounded-3xl border-4 border-yellow-400 bg-white/90 p-3 pt-8 shadow-2xl animate-float">
+      <div className="relative flex w-full flex-col items-center rounded-3xl border-4 border-blue-400 bg-white/90 p-3 pt-8 shadow-2xl animate-float">
         <div className="relative mb-2 shrink-0">
           <img
             src={fotoSrc}
             alt={balão.name}
-            className="w-12 h-12 rounded-full border-4 border-pink-300 object-cover shadow-lg sm:w-16 sm:h-16"
+            className="w-12 h-12 rounded-full border-4 border-cyan-300 object-cover shadow-lg sm:w-16 sm:h-16"
             onError={() => setImgError(true)}
           />
         </div>
-        <div className="mb-1 w-full break-words px-2 text-center text-sm font-extrabold text-red-700 drop-shadow sm:text-lg">
+        <div className="mb-1 w-full break-words px-2 text-center text-sm font-extrabold text-blue-700 drop-shadow sm:text-lg">
           {balão.name}
         </div>
-        <div className="mb-2 w-full break-words px-2 text-center text-xs italic text-pink-600 sm:text-sm">
+        <div className="mb-2 w-full break-words px-2 text-center text-xs italic text-blue-600 sm:text-sm">
           Recebeu uma mensagem de <span className="font-bold">{balão.remetente}</span>
         </div>
-        <div className="mt-auto flex w-full flex-grow items-center justify-center rounded-xl border border-yellow-200 bg-gradient-to-r from-yellow-100 to-pink-100 p-2 text-center text-sm font-bold text-pink-800 shadow min-h-[80px] sm:p-3 sm:text-lg">
+        <div className="mt-auto flex w-full flex-grow items-center justify-center rounded-xl border border-blue-200 bg-gradient-to-r from-blue-100 to-cyan-100 p-2 text-center text-sm font-bold text-blue-800 shadow min-h-[80px] sm:p-3 sm:text-lg">
           <p className="w-full break-words">"{balão.mensagem}"</p>
         </div>
-        {/* Contador de likes */}
-        <div className="mt-2 flex items-center gap-1 text-xs sm:text-sm text-pink-600 font-semibold">
-          <span className="text-pink-500">❤️</span>
+        <div className="mt-2 flex items-center gap-1 text-xs sm:text-sm text-blue-600 font-semibold">
+          <span className="text-blue-500">❤️</span>
           <span>{balão.likesCount || 0} {(balão.likesCount || 0) === 1 ? 'voto' : 'votos'}</span>
         </div>
       </div>
@@ -290,7 +281,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-yellow-50 to-red-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-cyan-50 to-indigo-100 relative overflow-hidden">
       <audio ref={audioRef} src="/45_0HW2p0x.mp3" preload="auto" />
 
       <AnimatePresence>
@@ -310,10 +301,10 @@ const Index = () => {
           setIsRankingOpen(true);
           fetchRanking();
         }}
-        className="fixed top-1/2 right-0 z-50 bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 text-white px-8 py-5 rounded-l-3xl shadow-2xl border-4 border-yellow-300 flex items-center gap-4 hover:from-yellow-500 hover:to-red-600 transition-all animate-pulse ring-4 ring-yellow-200 ring-offset-2 scale-110 hidden md:flex"
-        style={{ transform: 'translateY(-50%)', boxShadow: '0 0 32px 8px #fbbf24, 0 0 64px 16px #f87171' }}
+        className="fixed top-1/2 right-0 z-50 bg-gradient-to-br from-blue-400 via-cyan-400 to-blue-500 text-white px-8 py-5 rounded-l-3xl shadow-2xl border-4 border-cyan-300 flex items-center gap-4 hover:from-blue-500 hover:to-cyan-600 transition-all animate-pulse ring-4 ring-blue-200 ring-offset-2 scale-110 hidden md:flex"
+        style={{ transform: 'translateY(-50%)', boxShadow: '0 0 32px 8px #60a5fa, 0 0 64px 16px #06b6d4' }}
       >
-        <Trophy className="w-10 h-10 drop-shadow-lg animate-bounce text-yellow-200" />
+        <Trophy className="w-10 h-10 drop-shadow-lg animate-bounce text-cyan-100" />
         <span className="text-2xl font-extrabold tracking-wider drop-shadow-lg">Mais Populares</span>
       </button>
 
@@ -329,18 +320,18 @@ const Index = () => {
       
       {/* Drawer do Ranking de Popularidade */}
       <Drawer open={isRankingOpen} onOpenChange={setIsRankingOpen}>
-        <DrawerContent className="bg-gradient-to-br from-yellow-50 via-orange-100 to-red-50 border-4 border-yellow-300 shadow-2xl md:block">
+        <DrawerContent className="bg-gradient-to-br from-blue-50 via-cyan-100 to-indigo-50 border-4 border-blue-300 shadow-2xl md:block">
           <DrawerHeader>
-            <DrawerTitle className="flex items-center gap-4 text-4xl text-yellow-700 font-extrabold justify-center drop-shadow-lg">
-              <Trophy className="w-12 h-12 text-yellow-400 animate-pulse drop-shadow-lg" />
+            <DrawerTitle className="flex items-center gap-4 text-4xl text-blue-700 font-extrabold justify-center drop-shadow-lg">
+              <Trophy className="w-12 h-12 text-blue-400 animate-pulse drop-shadow-lg" />
               Ranking de Mensagens Recebidas
             </DrawerTitle>
           </DrawerHeader>
           <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
             {isRankingLoading ? (
-              <div className="text-center py-8 text-yellow-600">Carregando ranking...</div>
+              <div className="text-center py-8 text-blue-600">Carregando ranking...</div>
             ) : ranking.length === 0 ? (
-              <div className="text-center py-8 text-red-600">Nenhum dado de ranking encontrado.</div>
+              <div className="text-center py-8 text-blue-600">Nenhum dado de ranking encontrado.</div>
             ) : (
               (() => {
                 // Calcular os valores máximos para empates
@@ -354,21 +345,21 @@ const Index = () => {
                     {ranking.map((pessoa, idx) => {
                       let destaque = '';
                       let medalha = null;
-                      let borderImg = 'border-orange-200';
+                      let borderImg = 'border-cyan-200';
                       if (pessoa.mensagemCount === 0) {
                         destaque = 'border-gray-300 bg-gray-50 opacity-70';
                       } else if (pessoa.mensagemCount === top1) {
-                        destaque = 'border-yellow-400 bg-yellow-100 scale-105 ring-4 ring-yellow-200';
+                        destaque = 'border-blue-400 bg-blue-100 scale-105 ring-4 ring-blue-200';
                         medalha = '🥇';
-                        borderImg = 'border-yellow-400';
+                        borderImg = 'border-blue-400';
                       } else if (pessoa.mensagemCount === top2) {
-                        destaque = 'border-orange-300 bg-orange-50 scale-100 ring-2 ring-orange-200';
+                        destaque = 'border-cyan-300 bg-cyan-50 scale-100 ring-2 ring-cyan-200';
                         medalha = '🥈';
-                        borderImg = 'border-orange-300';
+                        borderImg = 'border-cyan-300';
                       } else if (pessoa.mensagemCount === top3) {
-                        destaque = 'border-red-300 bg-red-50 scale-100 ring-2 ring-red-200';
+                        destaque = 'border-indigo-300 bg-indigo-50 scale-100 ring-2 ring-indigo-200';
                         medalha = '🥉';
-                        borderImg = 'border-red-300';
+                        borderImg = 'border-indigo-300';
                       }
                       return (
                         <li
@@ -383,16 +374,16 @@ const Index = () => {
                               onError={e => (e.currentTarget.src = '/71YIvBZnx0L.jpg')}
                             />
                             {medalha && (
-                              <span className={`absolute -top-3 -right-3 ${medalha === '🥇' ? 'bg-yellow-400' : medalha === '🥈' ? 'bg-orange-300' : 'bg-red-300'} text-white rounded-full px-3 py-1 text-lg font-extrabold shadow-lg`}>{medalha}</span>
+                              <span className={`absolute -top-3 -right-3 ${medalha === '🥇' ? 'bg-blue-400' : medalha === '🥈' ? 'bg-cyan-300' : 'bg-indigo-300'} text-white rounded-full px-3 py-1 text-lg font-extrabold shadow-lg`}>{medalha}</span>
                             )}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-3">
-                              <span className="text-2xl font-extrabold text-red-700 drop-shadow-lg">{pessoa.nome}</span>
-                              {medalha === '🥇' && <Trophy className="w-7 h-7 text-yellow-500 drop-shadow-lg" />}
+                              <span className="text-2xl font-extrabold text-blue-700 drop-shadow-lg">{pessoa.nome}</span>
+                              {medalha === '🥇' && <Trophy className="w-7 h-7 text-blue-500 drop-shadow-lg" />}
                               {pessoa.mensagemCount === 0 && <span className="text-lg text-gray-400">Sem mensagens</span>}
                             </div>
-                            <div className="text-lg text-gray-700 font-bold mt-1">Mensagens recebidas: <span className="text-yellow-600">{pessoa.mensagemCount}</span></div>
+                            <div className="text-lg text-gray-700 font-bold mt-1">Mensagens recebidas: <span className="text-blue-600">{pessoa.mensagemCount}</span></div>
                           </div>
                         </li>
                       );
@@ -407,12 +398,11 @@ const Index = () => {
           )}
         </DrawerContent>
       </Drawer>
-      {/* Fundo decorativo */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-red-400 rounded-full"></div>
-        <div className="absolute top-32 right-20 w-16 h-16 bg-yellow-400 rounded-full"></div>
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-green-400 rounded-full"></div>
-        <div className="absolute bottom-40 right-10 w-18 h-18 bg-blue-400 rounded-full"></div>
+        <div className="absolute top-10 left-10 w-20 h-20 bg-blue-400 rounded-full"></div>
+        <div className="absolute top-32 right-20 w-16 h-16 bg-cyan-400 rounded-full"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-indigo-400 rounded-full"></div>
+        <div className="absolute bottom-40 right-10 w-18 h-18 bg-purple-400 rounded-full"></div>
       </div>
 
       <div className="relative z-10">
@@ -431,10 +421,10 @@ const Index = () => {
             transition={{ delay: 0.3 }}
             className="text-center mb-8"
           >
-            <h3 className="text-2xl font-bold text-red-700 mb-4">
+            <h3 className="text-2xl font-bold text-blue-700 mb-4">
               👥 Pessoas Disponíveis para Receber Mensagens
             </h3>
-            <p className="text-red-600 mb-6">
+            <p className="text-blue-600 mb-6">
               Clique em uma pessoa para enviar uma mensagem carinhosa!
             </p>
             
@@ -457,9 +447,9 @@ const Index = () => {
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"
+                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
               />
-              <p className="text-red-600 text-lg">Carregando pessoas...</p>
+              <p className="text-blue-600 text-lg">Carregando pessoas...</p>
             </div>
           ) : people.length === 0 ? (
             <motion.div
@@ -468,17 +458,17 @@ const Index = () => {
               className="text-center py-12"
             >
               <div className="text-6xl mb-4">😔</div>
-              <p className="text-red-600 text-lg mb-4">
+              <p className="text-blue-600 text-lg mb-4">
                 Nenhuma pessoa disponível no momento
               </p>
-              <p className="text-red-500 text-sm mb-6">
+              <p className="text-blue-500 text-sm mb-6">
                 Verifique se a API está rodando em http://localhost:5046
               </p>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={loadPeople}
-                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-full font-bold hover:from-red-600 hover:to-red-700 transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-full font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
               >
                 Tentar Novamente
               </motion.button>
@@ -524,19 +514,18 @@ const Index = () => {
           */}
         </div>
 
-        {/* Footer festivo */}
         <motion.footer
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="bg-gradient-to-r from-red-600 to-orange-600 text-white py-6 mt-12"
+          className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-6 mt-12"
         >
           <div className="container mx-auto px-4 text-center">
             <p className="text-lg font-medium mb-2">
-              🎪 Arraia WLS 2025 - Correio Elegante Digital 🎪
+              🎓 Semana W 2025 - Correio Elegante Digital 🎉
             </p>
-            <p className="text-yellow-200">
-              Espalhe amor e alegria neste São João! ❤️
+            <p className="text-cyan-100">
+              Espalhe amor e alegria nesta semana especial! ❤️
             </p>
           </div>
         </motion.footer>
@@ -576,9 +565,8 @@ const Index = () => {
         currentUser={currentUser}
       />
 
-      {/* Modal de balões de São João */}
       {showBaloes && (
-        <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-yellow-100 via-pink-100 to-red-200 bg-opacity-95 z-50 flex justify-center items-center overflow-auto p-2">
+        <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-blue-100 via-cyan-100 to-indigo-200 bg-opacity-95 z-50 flex justify-center items-center overflow-auto p-2">
           <div className="absolute inset-0 pointer-events-none z-10">
             {/* Elementos animados de fundo */}
             {[...Array(12)].map((_, i) => (
@@ -603,15 +591,14 @@ const Index = () => {
                 }}
               >
                 <span className="text-5xl select-none">
-                  {['🎉','🎈','🎊','🔥','🌽','🍡','🍬','💃','🕺','🎵','🌟','🍧'][i % 12]}
+                  {['🎉','🎓','🎊','💙','🌟','✨','🎈','💫','🎯','🚀','🌈','⭐'][i % 12]}
                 </span>
               </motion.div>
             ))}
           </div>
-          {/* Botão de fechar */}
           <button
             onClick={() => setShowBaloes(false)}
-            className="fixed top-4 right-4 z-50 text-red-600 hover:text-red-800 transition-colors bg-white/80 rounded-full p-3 shadow-lg"
+            className="fixed top-4 right-4 z-50 text-blue-600 hover:text-blue-800 transition-colors bg-white/80 rounded-full p-3 shadow-lg"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -619,15 +606,15 @@ const Index = () => {
           </button>
           <div className="relative w-full max-w-7xl max-h-[95vh] bg-white/70 rounded-2xl shadow-2xl p-1 sm:p-2 overflow-auto flex flex-col items-center justify-center">
             {isBaloesLoading ? (
-              <div className="flex items-center justify-center h-full text-3xl text-red-600 font-bold animate-pulse">
-                Carregando balões...
+              <div className="flex items-center justify-center h-full text-3xl text-blue-600 font-bold animate-pulse">
+                Carregando mensagens...
               </div>
             ) : baloes.length === 0 ? (
               <div className="flex items-center justify-center h-full text-center">
                 <div>
-                  <div className="text-8xl mb-4">🎈</div>
-                  <p className="text-2xl text-red-600 font-bold mb-2">Nenhuma mensagem recebida ainda</p>
-                  <p className="text-red-500">Seja o primeiro a enviar uma mensagem!</p>
+                  <div className="text-8xl mb-4">💌</div>
+                  <p className="text-2xl text-blue-600 font-bold mb-2">Nenhuma mensagem recebida ainda</p>
+                  <p className="text-blue-500">Seja o primeiro a enviar uma mensagem!</p>
                 </div>
               </div>
             ) : (
